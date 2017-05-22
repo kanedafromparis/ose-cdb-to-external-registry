@@ -61,4 +61,4 @@ WORKDIR ${HOME}
 
 ENTRYPOINT ["/bin/bash"]
 
-CMD ["/root/docker-publisher/push-to-external-registry.sh"]
+CMD ["/root/push-to-external-registry.sh"]
