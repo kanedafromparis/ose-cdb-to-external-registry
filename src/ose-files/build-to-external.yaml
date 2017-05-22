@@ -126,7 +126,7 @@ objects:
           kind: ImageStreamTag            
           name: ose-cdb-to-external-registry:latest
         secrets:
-        - mountPath: /home/docker-publisher/secret-pull
+        - mountPath: /root/secret-pull
           secretSource:
             name: builder-dockercfg-5hsp2
     triggers:

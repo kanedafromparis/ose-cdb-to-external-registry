@@ -30,7 +30,7 @@ ENV OC_VERSION="v1.4.1" \
     OC_SHA256="c2ac117e85a968c4d16d5657a31dce0715dcbfa4ab4a7bc49e5c6fd7caffb7da" \
     HOME=/home/docker-publisher 
 
-RUN echo "Install innitial package ..."  && \
+RUN echo "Install initial package ..."  && \
     yum install -y epel-release && \
     INSTALL_PKGS="jq which git tar wget mailx ssmtp hostname sysvinit-tools util-linux bsdtar \
       socat ethtool device-mapper iptables tree findutils nmap-ncat e2fsprogs xfsprogs lsof \
@@ -38,12 +38,8 @@ RUN echo "Install innitial package ..."  && \
     yum install -y $INSTALL_PKGS && \
     rpm -V $INSTALL_PKGS && \
     yum clean all && \
-    mkdir -p /var/lib/origin && \
-    echo "Setup of the default user ..."  && \
-    useradd -u 1001 -r -g 0 -d /home/docker-publisher -s /sbin/nologin -c "Docker Publisher User" default  && \
-    usermod -aG dockerroot default && \
-    mkdir -p /home/docker-publisher  && \
-    chown -R 1001:0 /home/docker-publisher 
+    mkdir -p /var/lib/origin
+    
 
 # This sepration is for layer optimisation reuse (will seen if that's a good idea)    
     
@@ -54,17 +50,15 @@ RUN echo "install openshift client ..." && \
     ln -sf /var/lib/origin/${OC_DIR}/oc /usr/bin/oc &&\
     rm -f /tmp/node.tar.gz 
 
-RUN usermod -aG users default
-
-COPY bash/push-to-external-registry.sh /home/docker-publisher/push-to-external-registry.sh
+COPY bash/push-to-external-registry.sh /root/push-to-external-registry.sh
 COPY bash/daemon.json /etc/docker/daemon.json
 
-RUN chmod ug+x /home/docker-publisher/push-to-external-registry.sh && mkdir -p /home/docker-publisher/secret-pull
+RUN chmod ug+x /root/push-to-external-registry.sh && mkdir -p /root/secret-pull
 
-USER 1001
+#USER 1001
 
 WORKDIR ${HOME}
 
 ENTRYPOINT ["/bin/bash"]
 
-CMD ["/home/docker-publisher/push-to-external-registry.sh"]
+CMD ["/root/docker-publisher/push-to-external-registry.sh"]
