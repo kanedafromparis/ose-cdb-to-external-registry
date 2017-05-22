@@ -36,13 +36,11 @@ parameters:
   generate: expression
   from: "[a-z0-9]{8}"
 - name: PULL_SECRET_NAME
-  description: The name of the application
-  generate: expression
-  from: "[a-z0-9]{8}"
+  description: The secret used to pull the image from internal registry
+  value: docker-extreg-cfg
 - name: PUSH_SECRET_NAME
-  description: The name of the application
-  generate: expression
-  from: "[a-z0-9]{8}"
+  description: The secret used to push the image to external registry
+  value: docker-extreg-cfg
 - name: GIT_REF
   description: The git branch used for the builder
   value: "master"
@@ -78,6 +76,7 @@ objects:
       dockerStrategy:
     source:
       type: Git
+      contextDir: "src/dockerfile" 
       git:
         uri: https://github.com/kanedafromparis/ose-cdb-to-external-registry.git
         ref: ${GIT_REF}
