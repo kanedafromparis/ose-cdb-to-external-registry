@@ -8,7 +8,9 @@ TOKEN="$(cat /var/run/secrets/kubernetes.io/serviceaccount/token)"
 if [ -n "${DEBUG_LEVEL}" ]; then
   echo "DEBUG INFO"
   oc whoami
+  echo "  -- "
   echo ""
+  ls -la /var/run/docker.sock
   echo "  -- "
   echo "pull info"
   ls -laR /var/run/secrets/openshift.io/pull
