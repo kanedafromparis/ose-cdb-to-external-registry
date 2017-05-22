@@ -1,0 +1,134 @@
+# This OpenShift template will :
+#  - create BuildConfig from docker images for external-regsitry
+#  - create Imagestream corresponding the external-registry image
+#  - create BuildConfig corresponding the external-registry image build
+# And then create a "dockercfg" secret :
+# oc secrets new-dockercfg docker-extreg-cfg     \
+#    --docker-server=$OUTPUT_REGISTRY \
+#    --docker-username=$USERNAME     \
+#    --docker-password=$PASSWORD      \ 
+#    --docker-email=$EMAIL
+# and associate it with the builder service account :
+# $ oc secrets add sa/builder secret/docker-extreg-cfg
+# Then, upload the template :
+# $ oc create -f build-to-external.yaml
+# (you can use the scripts/init-project.sh to do it for you)
+# And create the build configs, either with the web console, or the cli :
+# $ oc new-app --template=build-to-external-registry-build -p GIT_REF=develop -p APPLICATION_NAME=cnp
+# or you can go directly to 
+# $ oc new-app -f src/ose-files/build-to-external.yaml -p GIT_REF=develop -p APPLICATION_NAME=cnp
+
+
+
+kind: Template
+apiVersion: v1
+metadata:
+  name: build-to-external-registry
+  annotations:
+    description: This is a template to create the build to external BuildConfig object
+    tags: template
+    iconClass: docker
+labels:
+  template: build-to-external-registry
+parameters:
+- name: APPLICATION_NAME
+  description: The name of the application
+  generate: expression
+  from: "[a-z0-9]{8}"
+- name: PULL_SECRET_NAME
+  description: The name of the application
+  generate: expression
+  from: "[a-z0-9]{8}"
+- name: PUSH_SECRET_NAME
+  description: The name of the application
+  generate: expression
+  from: "[a-z0-9]{8}"
+- name: GIT_REF
+  description: The git branch used for the builder
+  value: "master"
+- name: INPUT_REGISTRY
+  generate: expression
+  from: "[a-z0-9]{8}"
+- name: INPUT_IMAGE
+  generate: expression
+  from: "[a-z0-9]{8}"
+- name: OUTPUT_REGISTRY
+  generate: expression
+  from: "[a-z0-9]{8}"
+- name: OUTPUT_IMAGE
+  generate: expression
+  from: "[a-z0-9]{8}"
+
+
+objects:
+- kind: ImageStream
+  apiVersion: v1
+  metadata:
+    name: ose-cdb-to-external-registry
+
+- kind: BuildConfig
+  apiVersion: v1
+  metadata:
+    name: ose-cdb-to-external-registry
+    labels:
+      type: internal
+  spec:
+    strategy:
+      type: Docker
+      dockerStrategy:
+    source:
+      type: Git
+      git:
+        uri: https://github.com/kanedafromparis/ose-cdb-to-external-registry.git
+        ref: ${GIT_REF}
+    output:
+      to:
+        kind: ImageStreamTag
+        name: ose-cdb-to-external-registry:latest
+    triggers:
+    - type: ConfigChange
+
+- kind: BuildConfig
+  apiVersion: v1
+  kind: BuildConfig
+  metadata:
+    labels:
+      app: ${APPLICATION_NAME}
+    name: ${APPLICATION_NAME}
+  spec:
+    nodeSelector: null
+    output:
+      pushSecret:
+        name: ${PUSH_SECRET_NAME}
+      to:
+        kind: DockerImage
+        name: ${OUTPUT_REGISTRY}/${OUTPUT_IMAGE}
+    postCommit: {}
+    resources: {}
+    runPolicy: Serial
+    source:
+      type: None
+    strategy:
+      type: Custom      
+      customStrategy:
+        env:
+        - name: INPUT_REGISTRY
+          value: ${OUTPUT_IMAGE}
+        - name: INPUT_IMAGE
+          value: ${OUTPUT_IMAGE}
+        - name: OUTPUT_REGISTRY
+          value: ${OUTPUT_IMAGE}
+        - name: OUTPUT_IMAGE
+          value: ${OUTPUT_IMAGE}
+        - name: DEBUG_LEVEL
+          value: "99"
+        exposeDockerSocket: true
+        from:
+          kind: ImageStreamTag            
+          name: ose-cdb-to-external-registry:latest
+        secrets:
+        - mountPath: /home/docker-publisher/secret-pull
+          secretSource:
+            name: builder-dockercfg-5hsp2
+    triggers:
+    - type: ConfigChange
