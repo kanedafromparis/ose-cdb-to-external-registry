@@ -37,6 +37,7 @@ $ oc tag cncparis-node:latest cncparis-node:pre-production
 
 --
 # create the needed secrets :
+
 $ oc secrets new-dockercfg docker-extreg-cfg     \
     --docker-server=$OUTPUT_REGISTRY \
     --docker-username=$USERNAME     \
@@ -47,10 +48,15 @@ $ oc new-app -f src/ose-files/build-to-external.yaml -p GIT_REF=develop -p APPLI
     
 --
 ### tips :
+
 #### docker-machine env ose14-cb
+
 eval $(docker-machine env ose14-cb)
+
 docker run --rm -it --entrypoint /bin/bash ose-cdb-to-external-registry
 
 #### Cleaning
+
 RM_LST=`docker ps -a | grep Exited | awk '{print $1}'` && docker rm $RM_LST
+
 RMI_LST=`docker images | grep none | awk '{print $3}'` && docker rmi $RMI_LST
