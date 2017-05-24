@@ -27,6 +27,6 @@ if [ -n "${OUTPUT_IMAGE}" ] || [ -s "/root/.dockercfg" ]; then
   docker pull "${IN_TAG}"
   docker tag "${IN_TAG}" "${OUT_TAG}"
   docker login -u "${OUTPUT_REGISTRY_USERNAME}" -p "${OUTPUT_REGISTRY_PASSWORD}" "${OUTPUT_REGISTRY}"
-  docker pull "${OUT_TAG}"
+  docker push "${OUT_TAG}"
 
 fi
