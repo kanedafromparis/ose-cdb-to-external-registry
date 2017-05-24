@@ -25,4 +25,4 @@ LABEL io.k8s.display-name="OpenShift Origin Custom Builder Example" \
       io.k8s.description="This is an example of a custom builder for use with OpenShift Origin."
 ENV HOME=/root
 COPY bash/build.sh /tmp/build.sh
-CMD ["bash -c /tmp/build.sh"]
+CMD ["/bin/bash","-c","/tmp/build.sh"]
