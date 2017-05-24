@@ -43,7 +43,7 @@ parameters:
   value: docker-extreg-cfg
 - name: GIT_REF
   description: The git branch used for the builder
-  value: "master"
+  value: "reference"
 - name: INPUT_REGISTRY
   generate: expression
   from: "[a-z0-9]{8}"
