@@ -5,8 +5,10 @@
 #
 #   OUTPUT_REGISTRY - the Docker registry URL to push this image to
 #   OUTPUT_IMAGE - the name to tag the image with
-#   SOURCE_URI - a URI to fetch the build context from
-#   SOURCE_REF - a reference to pass to Git for which commit to use (optional)
+#   OUTPUT_REGISTRY_USERNAME - the username to 
+#   OUTPUT_REGISTRY_PASSWORD - a reference to pass to Git for which commit to use (optional)
+#   INPUT_REGISTRY - a URI to fetch the build context from
+#   INPUT_IMAGE - a reference to pass to Git for which commit to use (optional)
 #
 # This image expects to have the Docker socket bind-mounted into the container.
 # If "/root/.dockercfg" is bind mounted in, it will use that as authorization
@@ -24,6 +26,6 @@ RUN INSTALL_PKGS="gettext automake make docker" && \
 LABEL io.k8s.display-name="OpenShift Origin Custom Builder Example" \
       io.k8s.description="This is an example of a custom builder for use with OpenShift Origin."
 ENV HOME=/root
-COPY bash/build.sh /build.sh
-RUN chmod a+x /build.sh
-CMD ["/bin/bash","-c","/build.sh"]
+COPY bash/build.sh /build-tag-and-push.sh
+RUN chmod a+x /build-tag-and-push.sh
+CMD ["/bin/bash","-c","/build-tag-and-push.sh"]
