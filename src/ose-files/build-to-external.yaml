@@ -44,18 +44,14 @@ parameters:
 - name: GIT_REF
   description: The git branch used for the builder
   value: "reference"
-- name: INPUT_REGISTRY
-  generate: expression
-  from: "[a-z0-9]{8}"
-- name: INPUT_IMAGE
-  generate: expression
-  from: "[a-z0-9]{8}"
+- name: SOURCE_REPOSITORY
+  value: "https://github.com/kanedafromparis/cncparis-node.git"
+- name: SOURCE_REF
+  value: "master"
 - name: OUTPUT_REGISTRY
-  generate: expression
-  from: "[a-z0-9]{8}"
+  value: "172.30.135.130:5000"
 - name: OUTPUT_IMAGE
-  generate: expression
-  from: "[a-z0-9]{8}"
+  value: "custombuild/cnp-custom:custom"
 
 
 objects:
@@ -111,10 +107,10 @@ objects:
       type: Custom      
       customStrategy:
         env:
-        - name: INPUT_REGISTRY
-          value: ${OUTPUT_IMAGE}
-        - name: INPUT_IMAGE
-          value: ${OUTPUT_IMAGE}
+        - name: SOURCE_REPOSITORY
+          value: ${SOURCE_REPOSITORY}
+        - name: SOURCE_REF
+          value: ${SOURCE_REF}
         - name: OUTPUT_REGISTRY
           value: ${OUTPUT_IMAGE}
         - name: OUTPUT_IMAGE
@@ -125,9 +121,9 @@ objects:
         from:
           kind: ImageStreamTag            
           name: ose-cdb-to-external-registry:latest
-        secrets:
-        - mountPath: /root/secret-pull
-          secretSource:
-            name: builder-dockercfg-5hsp2
+#        secrets:
+#        - mountPath: /root/secret-pull
+#          secretSource:
+#            name: builder-dockercfg-5hsp2
     triggers:
     - type: ConfigChange
