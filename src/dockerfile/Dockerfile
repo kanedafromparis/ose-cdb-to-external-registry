@@ -26,6 +26,6 @@ RUN INSTALL_PKGS="gettext automake make docker" && \
 LABEL io.k8s.display-name="OpenShift Origin Custom Builder Example" \
       io.k8s.description="This is an example of a custom builder for use with OpenShift Origin."
 ENV HOME=/root
-COPY bash/build.sh /build-tag-and-push.sh
+COPY bash/build-tag-and-push.sh /build-tag-and-push.sh
 RUN chmod a+x /build-tag-and-push.sh
 CMD ["/bin/bash","-c","/build-tag-and-push.sh"]
