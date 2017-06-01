@@ -55,7 +55,7 @@ if [[ -d /var/run/secrets/openshift.io/push ]] && [[ ! -e /root/.dockercfg ]]; t
   cp /var/run/secrets/openshift.io/push/.dockercfg /root/.dockercfg
 fi
 
-if [[ -n "${OUTPUT_IMAGE}" ] || [ -s "/root/.dockercfg" ]]; then
+if [ -n "${OUTPUT_IMAGE}" ] || [ -s "/root/.dockercfg" ]; then
 
   #docker login ${INPUT_REGISTRY}
   docker pull "${IN_TAG}"
