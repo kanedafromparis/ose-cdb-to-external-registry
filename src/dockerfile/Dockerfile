@@ -34,4 +34,4 @@ LABEL io.k8s.display-name="OpenShift Origin Custom Builder Example" \
 ENV HOME=/root
 COPY bash/build-tag-and-push.sh /build-tag-and-push.sh
 RUN chmod a+x /build-tag-and-push.sh
-CMD ["/bin/bash","-c","/build-tag-and-push.sh"]
+CMD ["/build-tag-and-push.sh"]
