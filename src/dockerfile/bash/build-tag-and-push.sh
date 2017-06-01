@@ -25,7 +25,7 @@ fi
 if [ -n "${INPUT_IMAGE}" ]; then
   IN_TAG="${INPUT_REGISTRY}/${INPUT_IMAGE}"
 else
-  if [ -n "${IS_NAME}"]; then
+  if [ -n "${IS_NAME}" ]; then
     IS_VALUE=`oc get is ${IS_NAME} -o json`
     if [ -z "${IS_VALUE}" ]; then
       echo "no imageStream ${IS_NAME} in this project";
