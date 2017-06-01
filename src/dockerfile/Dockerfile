@@ -7,7 +7,14 @@
 #   OUTPUT_IMAGE - the name to tag the image with
 #   IS_NAME - the name of the imageStream to be use
 #   INPUT_REGISTRY - a URI to fetch the build context from
+#    exemple : 
+#     - name: INPUT_REGISTRY
+#       value: '172.30.135.130:5000'
 #   INPUT_IMAGE - a reference to pass to Git for which commit to use (optional)
+#    exemple :  
+#     - name: INPUT_IMAGE
+#       value: >-
+#        custombuild/cnp@sha256:09e2f87b64b431ed07722c0238848295c24d2806018c09e87ad418c0eb83395d
 #
 # This image expects to have the Docker socket bind-mounted into the container.
 # If "/root/.dockercfg" is bind mounted in, it will use that as authorization
@@ -15,9 +22,9 @@
 #
 # The standard name for this image is openshift/origin-custom-docker-builder
 #
-FROM openshift/origin-base
+FROM openshift/origin:v1.3.3
 
-RUN INSTALL_PKGS="gettext automake make docker" && \
+RUN INSTALL_PKGS="gettext automake make docker jq" && \
     yum install -y $INSTALL_PKGS && \
     rpm -V $INSTALL_PKGS && \
     yum clean all
