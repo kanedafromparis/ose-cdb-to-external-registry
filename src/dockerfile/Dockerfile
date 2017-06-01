@@ -36,7 +36,7 @@ ENV HOME=/root \
     OC_VERSION="v1.4.1" \
     OC_FILE="openshift-origin-client-tools-v1.4.1-3f9807a-linux-64bit.tar.gz" \
     OC_DIR="openshift-origin-client-tools-v1.4.1+3f9807a-linux-64bit" \
-    OC_SHA256="c2ac117e85a968c4d16d5657a31dce0715dcbfa4ab4a7bc49e5c6fd7caffb7da" \
+    OC_SHA256="c2ac117e85a968c4d16d5657a31dce0715dcbfa4ab4a7bc49e5c6fd7caffb7da"
 
 RUN echo "install openshift client ..." && \
     curl -fsSL https://github.com/openshift/origin/releases/download/${OC_VERSION}/${OC_FILE} -o /tmp/oc.tar.gz && \
