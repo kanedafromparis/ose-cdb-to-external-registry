@@ -5,8 +5,7 @@
 #
 #   OUTPUT_REGISTRY - the Docker registry URL to push this image to
 #   OUTPUT_IMAGE - the name to tag the image with
-#   OUTPUT_REGISTRY_USERNAME - the username to 
-#   OUTPUT_REGISTRY_PASSWORD - a reference to pass to Git for which commit to use (optional)
+#   IS_NAME - the name of the imageStream to be use
 #   INPUT_REGISTRY - a URI to fetch the build context from
 #   INPUT_IMAGE - a reference to pass to Git for which commit to use (optional)
 #
