@@ -9,17 +9,17 @@ if [ ! -e "${DOCKER_SOCKET}" ]; then
   exit 1
 fi
 
-if [ -z "${OUTPUT_REGISTRY}" ] ]; then
+if [ -z "${OUTPUT_REGISTRY}" ]; then
   echo "OUTPUT_REGISTRY is missing"
   exit 1
 fi
 
-if [ -z "${INPUT_REGISTRY}" ] ]; then
+if [ -z "${INPUT_REGISTRY}" ]; then
   echo "OUTPUT_IMAGE is missing"
   exit 1
 fi
 
-if [ -z "${INPUT_REGISTRY}" ] ]; then
+if [ -z "${INPUT_REGISTRY}" ]; then
   echo "INPUT_REGISTRY is missing"
   exit 1
 fi
@@ -47,7 +47,7 @@ else
   fi
 fi
 
-if [ -n "${OUTPUT_IMAGE}" ] ]; then
+if [ -n "${OUTPUT_IMAGE}" ]; then
   OUT_TAG="${OUTPUT_REGISTRY}/${OUTPUT_IMAGE}"
 fi
 
@@ -55,7 +55,7 @@ if [[ -d /var/run/secrets/openshift.io/push ]] && [[ ! -e /root/.dockercfg ]]; t
   cp /var/run/secrets/openshift.io/push/.dockercfg /root/.dockercfg
 fi
 
-if [ -n "${OUTPUT_IMAGE}" ] || [ -s "/root/.dockercfg" ]; then
+if [[ -n "${OUTPUT_IMAGE}" ] || [ -s "/root/.dockercfg" ]]; then
 
   #docker login ${INPUT_REGISTRY}
   docker pull "${IN_TAG}"
