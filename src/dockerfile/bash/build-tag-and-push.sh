@@ -4,6 +4,8 @@ IFS=$'\n\t'
 
 DOCKER_SOCKET=/var/run/docker.sock
 
+env
+
 if [ ! -e "${DOCKER_SOCKET}" ]; then
   echo "Docker socket missing at ${DOCKER_SOCKET}"
   exit 1
@@ -11,11 +13,6 @@ fi
 
 if [ -z "${OUTPUT_REGISTRY}" ]; then
   echo "OUTPUT_REGISTRY is missing"
-  exit 1
-fi
-
-if [ -z "${INPUT_REGISTRY}" ]; then
-  echo "OUTPUT_IMAGE is missing"
   exit 1
 fi
 
