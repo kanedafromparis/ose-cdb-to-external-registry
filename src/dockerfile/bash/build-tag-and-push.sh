@@ -3,14 +3,31 @@ set -o pipefail
 IFS=$'\n\t'
 
 DOCKER_SOCKET=/var/run/docker.sock
+PUSH_SECRET=/root/.push-secret
 
-env
-oc whoami
+"${OUTPUT_REGISTRY_USERNAME}" -p "${OUTPUT_REGISTRY_PASSWORD}" "${OUTPUT_REGISTRY}"
+
+#env
+#oc whoami
 
 if [ ! -e "${DOCKER_SOCKET}" ]; then
   echo "Docker socket missing at ${DOCKER_SOCKET}"
   exit 1
 fi
+
+
+if [ ! -e "${PUSH_SECRET}" ]; then
+  echo "push secret file is missing at ${PUSH_SECRET}"
+  exit 1
+else
+  OUTPUT_REGISTRY=`cat ${PUSH_SECRET} | jq 'keys'[0]`;
+  OUTPUT_REGISTRY_USERNAME=`cat ${PUSH_SECRET} | jq ".$OUTPUT_REGISTRY.username"`;
+  OUTPUT_REGISTRY_PASSWORD=`cat ${PUSH_SECRET} | jq ".$OUTPUT_REGISTRY.password"`;
+
+  
+}" -p "${OUTPUT_REGISTRY_PASSWORD}" "${OUTPUT_REGISTRY}"
+fi
+
 
 if [ -z "${OUTPUT_REGISTRY}" ]; then
   echo "OUTPUT_REGISTRY is missing"
@@ -58,7 +75,7 @@ if [ -n "${OUTPUT_IMAGE}" ] || [ -s "/root/.dockercfg" ]; then
   #docker login ${INPUT_REGISTRY}
   docker pull "${IN_TAG}"
   docker tag "${IN_TAG}" "${OUT_TAG}"
-  #docker login -u "${OUTPUT_REGISTRY_USERNAME}" -p "${OUTPUT_REGISTRY_PASSWORD}" "${OUTPUT_REGISTRY}"
+  docker login -u ${OUTPUT_REGISTRY_USERNAME} -p ${OUTPUT_REGISTRY_PASSWORD} ${OUTPUT_REGISTRY}
   docker push "${OUT_TAG}"
 
 fi
