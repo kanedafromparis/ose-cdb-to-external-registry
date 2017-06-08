@@ -21,9 +21,9 @@ if [ ! -e "${PUSH_SECRET}" ]; then
   echo "push secret file is missing at ${PUSH_SECRET}"
   exit 1
 else
-  OUTPUT_REGISTRY=`cat ${PUSH_SECRET}/.dockercfg | jq 'keys'[0]`;
-  OUTPUT_REGISTRY_USERNAME=`cat ${PUSH_SECRET}/.dockercfg  | jq ".$OUTPUT_REGISTRY.username"`;
-  OUTPUT_REGISTRY_PASSWORD=`cat ${PUSH_SECRET}/.dockercfg  | jq ".$OUTPUT_REGISTRY.password"`;
+  OUTPUT_REGISTRY=`cat ${PUSH_SECRET}/.dockercfg | jq -r 'keys'[0]`;
+  OUTPUT_REGISTRY_USERNAME=`cat ${PUSH_SECRET}/.dockercfg  | jq -r ".\"$OUTPUT_REGISTRY\".username"`;
+  OUTPUT_REGISTRY_PASSWORD=`cat ${PUSH_SECRET}/.dockercfg  | jq -r ".\"$OUTPUT_REGISTRY\".password"`;
 fi
 
 
