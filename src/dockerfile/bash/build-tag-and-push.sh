@@ -7,9 +7,9 @@ PUSH_SECRET=/root/.push-secret
 
 #env
 #oc whoami
-ls -l ${PUSH_SECRET}
-ls -l /var/run/secrets/openshift.io/push
-ls -l /var/run/secrets/openshift.io/pull
+ls -al ${PUSH_SECRET}
+ls -al /var/run/secrets/openshift.io/push
+ls -al /var/run/secrets/openshift.io/pull
 
 if [ ! -e "${DOCKER_SOCKET}" ]; then
   echo "Docker socket missing at ${DOCKER_SOCKET}"
