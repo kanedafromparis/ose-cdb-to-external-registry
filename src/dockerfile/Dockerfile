@@ -42,9 +42,14 @@ RUN echo "install openshift client ..." && \
     curl -fsSL https://github.com/openshift/origin/releases/download/${OC_VERSION}/${OC_FILE} -o /tmp/oc.tar.gz && \
     echo "${OC_SHA256}  /tmp/oc.tar.gz" | sha256sum -c - && \
     tar -C /var/lib/origin -xzf /tmp/oc.tar.gz && \
-    ln -sf /var/lib/origin/${OC_DIR}/oc /usr/bin/oc &&\
-    rm -f /tmp/node.tar.gz     
-    
+    ln -sf /var/lib/origin/${OC_DIR}/oc /usr/bin/oc 
+
+RUN echo "install jq cli..." && \
+    yum install -y epel-release &&\
+    INSTALL_PKGS="jq" && \
+    yum install -y $INSTALL_PKGS && \
+    rpm -V $INSTALL_PKGS && \
+    yum clean all 
     
 COPY bash/build-tag-and-push.sh /build-tag-and-push.sh
 RUN chmod a+x /build-tag-and-push.sh

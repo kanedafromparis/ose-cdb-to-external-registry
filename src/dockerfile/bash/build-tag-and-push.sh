@@ -5,6 +5,7 @@ IFS=$'\n\t'
 DOCKER_SOCKET=/var/run/docker.sock
 
 env
+oc whoami
 
 if [ ! -e "${DOCKER_SOCKET}" ]; then
   echo "Docker socket missing at ${DOCKER_SOCKET}"
