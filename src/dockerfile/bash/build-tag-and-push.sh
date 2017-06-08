@@ -9,6 +9,7 @@ PUSH_SECRET=/root/.push-secret
 
 #env
 #oc whoami
+ls -l ${PUSH_SECRET}
 
 if [ ! -e "${DOCKER_SOCKET}" ]; then
   echo "Docker socket missing at ${DOCKER_SOCKET}"
