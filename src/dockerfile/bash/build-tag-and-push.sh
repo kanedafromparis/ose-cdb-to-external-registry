@@ -32,13 +32,13 @@ else
       echo "no imageStream ${IS_NAME} in this project";
       exit 1
     fi
-    TAG_UAT=`cat ${IS_VALUE} | jq -r ".status.tags[]|select(.tag == \"uat\")|.items|max_by(.created)|.dockerImageReference"`
+    TAG_UAT=`echo ${IS_VALUE} | jq -r ".status.tags[]|select(.tag == \"uat\")|.items|max_by(.created)|.dockerImageReference"`
     if [ -z "${TAG_UAT}" ]; then
       echo "no tag \"uat\" in imageStream ${IS_NAME} in this project";
       exit 1
     fi
      oc tag ${IS_NAME}:uat ${IS_NAME}:production
-     IN_TAG=`cat ${IS_VALUE} | jq -r ".status.tags[]|select(.tag == \"production\")|.items|max_by(.created)|.dockerImageReference"`
+     IN_TAG=`echo ${IS_VALUE} | jq -r ".status.tags[]|select(.tag == \"production\")|.items|max_by(.created)|.dockerImageReference"`
   else
       echo "INPUT_IMAGE or IS_NAME need to be set"
       exit 1
