@@ -8,8 +8,8 @@ PUSH_SECRET=/root/.push-secret
 #env
 #oc whoami
 ls -al ${PUSH_SECRET}
-ls -al /var/run/secrets/openshift.io/push
-ls -al /var/run/secrets/openshift.io/pull
+#ls -al /var/run/secrets/openshift.io/push
+#ls -al /var/run/secrets/openshift.io/pull
 
 if [ ! -e "${DOCKER_SOCKET}" ]; then
   echo "Docker socket missing at ${DOCKER_SOCKET}"
@@ -21,9 +21,9 @@ if [ ! -e "${PUSH_SECRET}" ]; then
   echo "push secret file is missing at ${PUSH_SECRET}"
   exit 1
 else
-  OUTPUT_REGISTRY=`cat ${PUSH_SECRET} | jq 'keys'[0]`;
-  OUTPUT_REGISTRY_USERNAME=`cat ${PUSH_SECRET} | jq ".$OUTPUT_REGISTRY.username"`;
-  OUTPUT_REGISTRY_PASSWORD=`cat ${PUSH_SECRET} | jq ".$OUTPUT_REGISTRY.password"`;
+  OUTPUT_REGISTRY=`cat ${PUSH_SECRET}/.dockercfg | jq 'keys'[0]`;
+  OUTPUT_REGISTRY_USERNAME=`cat ${PUSH_SECRET}/.dockercfg  | jq ".$OUTPUT_REGISTRY.username"`;
+  OUTPUT_REGISTRY_PASSWORD=`cat ${PUSH_SECRET}/.dockercfg  | jq ".$OUTPUT_REGISTRY.password"`;
 fi
 
 
