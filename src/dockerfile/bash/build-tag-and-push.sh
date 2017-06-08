@@ -23,9 +23,6 @@ else
   OUTPUT_REGISTRY=`cat ${PUSH_SECRET} | jq 'keys'[0]`;
   OUTPUT_REGISTRY_USERNAME=`cat ${PUSH_SECRET} | jq ".$OUTPUT_REGISTRY.username"`;
   OUTPUT_REGISTRY_PASSWORD=`cat ${PUSH_SECRET} | jq ".$OUTPUT_REGISTRY.password"`;
-
-  
-}" -p "${OUTPUT_REGISTRY_PASSWORD}" "${OUTPUT_REGISTRY}"
 fi
 
 
@@ -34,13 +31,14 @@ if [ -z "${OUTPUT_REGISTRY}" ]; then
   exit 1
 fi
 
-if [ -z "${INPUT_REGISTRY}" ]; then
-  echo "INPUT_REGISTRY is missing"
-  exit 1
-fi
+
 
 #TODO improve with git describe --exact-match <commit-id>
 if [ -n "${INPUT_IMAGE}" ]; then
+  if [ -z "${INPUT_REGISTRY}" ]; then
+    echo "INPUT_REGISTRY is missing"
+    exit 1
+  fi
   IN_TAG="${INPUT_REGISTRY}/${INPUT_IMAGE}"
 else
   if [ -n "${IS_NAME}" ]; then
@@ -63,7 +61,10 @@ else
 fi
 
 if [ -n "${OUTPUT_IMAGE}" ]; then
-  OUT_TAG="${OUTPUT_REGISTRY}/${OUTPUT_IMAGE}"
+  OUT_TAG="${OUTPUT_REGISTRY}/${OUTPUT_IMAGE}";
+else
+  echo "OUTPUT_IMAGE is missing"
+  exit 1
 fi
 
 if [[ -d /var/run/secrets/openshift.io/push ]] && [[ ! -e /root/.dockercfg ]]; then
