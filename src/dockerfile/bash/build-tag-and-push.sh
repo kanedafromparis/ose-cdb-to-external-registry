@@ -5,12 +5,6 @@ IFS=$'\n\t'
 DOCKER_SOCKET=/var/run/docker.sock
 PUSH_SECRET=/root/.push-secret
 
-#env
-#oc whoami
-ls -al ${PUSH_SECRET}
-#ls -al /var/run/secrets/openshift.io/push
-#ls -al /var/run/secrets/openshift.io/pull
-
 if [ ! -e "${DOCKER_SOCKET}" ]; then
   echo "Docker socket missing at ${DOCKER_SOCKET}"
   exit 1
