@@ -56,6 +56,8 @@ else
       exit 1
     fi
      oc tag ${IS_NAME}:${INPUT_IS_TAG} ${IS_NAME}:${OUTPUT_IS_TAG}
+     # this is a groickky hack
+     sleep 5;
      IS_VALUE=`oc get is ${IS_NAME} -o json`
      IN_TAG=`echo ${IS_VALUE} | jq -r ".status.tags[]|select(.tag == \"${OUTPUT_IS_TAG}\")|.items|max_by(.created)|.dockerImageReference"`
   else
