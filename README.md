@@ -37,7 +37,7 @@ $ oc tag cncparis-node:latest cncparis-node:pre-production
 
 --
 # create the needed secrets :
-
+                                    
 $ oc secrets new-dockercfg docker-extreg-cfg     \
     --docker-server=$OUTPUT_REGISTRY \
     --docker-username=$USERNAME     \
@@ -45,7 +45,23 @@ $ oc secrets new-dockercfg docker-extreg-cfg     \
     --docker-email=$EMAIL
 
 $ oc new-app -f src/ose-files/build-to-external.yaml -p GIT_REF=develop -p APPLICATION_NAME=cnp ...
-    
+-- 
+for working on roles issue :
+DEV_PROJECT_NAME=custom-pusher
+oc new-project $DEV_PROJECT_NAME
+oc export secret docker-extreg-cfg -n custombuild | oc create -f -
+oc export bc/cnp -n custombuild | oc create -f -
+oc export bc/vfttsjrq -n custombuild | oc create -f -
+oc export is/cnp -o yaml -n custombuild | oc create -f -
+oc export is/ose-cdb-to-external-registry -o yaml -n custombuild | oc create -f -
+
+oc policy add-role-to-user system:image-puller system:serviceaccount:custombuild:default --namespace=$DEV_PROJECT_NAME
+
+
+--
+oc secrets link --for=pull builder docker-extreg-cfg
+
+
 --
 ### tips :
 
