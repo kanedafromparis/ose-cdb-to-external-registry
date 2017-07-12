@@ -10,6 +10,10 @@ if [ ! -e "${DOCKER_SOCKET}" ]; then
   exit 1
 fi
 
+if [ -z "${OUTPUT_REGISTRY}" ]; then
+  echo "OUTPUT_REGISTRY is missing"
+  exit 1
+fi
 
 if [ ! -e "${PUSH_SECRET}" ]; then
   echo "push secret file is missing at ${PUSH_SECRET}"
@@ -21,11 +25,15 @@ else
 fi
 
 
-if [ -z "${OUTPUT_REGISTRY}" ]; then
-  echo "OUTPUT_REGISTRY is missing"
-  exit 1
+if [ -z "${INPUT_IS_TAG}" ]; then
+  echo "INPUT_IS_TAG is missing, using default value"
+  INPUT_IS_TAG=uat;
 fi
 
+if [ -z "${OUTPUT_IS_TAG}" ]; then
+  echo "OUTPUT_IS_TAG is missing, using default value"
+  OUTPUT_IS_TAG=production;
+fi
 
 
 #TODO improve with git describe --exact-match <commit-id>
@@ -42,13 +50,14 @@ else
       echo "no imageStream ${IS_NAME} in this project";
       exit 1
     fi
-    TAG_UAT=`echo ${IS_VALUE} | jq -r ".status.tags[]|select(.tag == \"uat\")|.items|max_by(.created)|.dockerImageReference"`
-    if [ -z "${TAG_UAT}" ]; then
-      echo "no tag \"uat\" in imageStream ${IS_NAME} in this project";
+    TAG_USED=`echo ${IS_VALUE} | jq -r ".status.tags[]|select(.tag == \"${INPUT_IS_TAG}\")|.items|max_by(.created)|.dockerImageReference"`
+    if [ -z "${TAG_USED}" ]; then
+      echo "no tag \"${INPUT_IS_TAG}\" in imageStream ${IS_NAME} in this project";
       exit 1
     fi
-     oc tag ${IS_NAME}:uat ${IS_NAME}:production
-     IN_TAG=`echo ${IS_VALUE} | jq -r ".status.tags[]|select(.tag == \"production\")|.items|max_by(.created)|.dockerImageReference"`
+     oc tag ${IS_NAME}:${INPUT_IS_TAG} ${IS_NAME}:${OUTPUT_IS_TAG}
+     IS_VALUE=`oc get is ${IS_NAME} -o json`
+     IN_TAG=`echo ${IS_VALUE} | jq -r ".status.tags[]|select(.tag == \"${OUTPUT_IS_TAG}\")|.items|max_by(.created)|.dockerImageReference"`
   else
       echo "INPUT_IMAGE or IS_NAME need to be set"
       exit 1
