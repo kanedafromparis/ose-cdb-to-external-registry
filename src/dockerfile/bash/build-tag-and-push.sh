@@ -64,11 +64,11 @@ else
         IS_VALUE=`oc get is ${IS_NAME} -o json -n custom-pusher`
         IN_TAG=`echo ${IS_VALUE} | jq -r ".status.tags[]|select(.tag == \"${OUTPUT_IS_TAG}\")|.items|max_by(.created)|.dockerImageReference"`
         
-        if [[ ${IN_TAG::-1} == *$IMAGE_SHA* ]]; then
+        if [[ $IN_TAG == *${IMAGE_SHA::-1}* ]]; then
           break;
         else
-          echo "IMAGE_SHA=$IMAGE_SHA"
-          echo "{IN_TAG::-1}=${IN_TAG::-1}"
+          echo "{IMAGE_SHA::-1}=$${IMAGE_SHA::-1}"
+          echo "IN_TAG=$IN_TAG"
           
           sleep 5
         fi
