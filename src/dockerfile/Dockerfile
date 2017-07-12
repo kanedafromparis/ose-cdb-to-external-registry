@@ -1,26 +1,68 @@
-# This image is intended for testing purposes, it has the same behavior as
-# the origin-docker-builder image, but does so as a custom image so it can
-# be used with Custom build strategies.  It expects a set of
-# environment variables to parameterize the build:
+# This image is intended to be used to push internal images to external repository.
+# It expects a set of environment variables to parameterize the build:
 #
 #   OUTPUT_REGISTRY - the Docker registry URL to push this image to
 #   OUTPUT_IMAGE - the name to tag the image with
-#   IS_NAME - the name of the imageStream to be use
-#   INPUT_REGISTRY - a URI to fetch the build context from
+#   IS_NAME - the name of the imageStream to use
+#   INPUT_REGISTRY - a URI to fetch the build context from (internal registry)
 #    exemple : 
 #     - name: INPUT_REGISTRY
 #       value: '172.30.135.130:5000'
-#   INPUT_IMAGE - a reference to pass to Git for which commit to use (optional)
+#  
+#   INPUT_IMAGE - This is a overinding mechanisme to push a specific image without tags (optional)
 #    exemple :  
 #     - name: INPUT_IMAGE
 #       value: >-
 #        custombuild/cnp@sha256:09e2f87b64b431ed07722c0238848295c24d2806018c09e87ad418c0eb83395d
 #
+#   INPUT_IS_TAG - the reference tag used for the image to push
+#
+#   OUTPUT_IS_TAG - the tag used for the image before to pushing it
+#
+#   PUSH_SECRET need to be set to /root/.push-secret
+#
 # This image expects to have the Docker socket bind-mounted into the container.
-# If "/root/.dockercfg" is bind mounted in, it will use that as authorization
+# Push secret need to be mount to "/root/.push-secret" it will use that as authorization
 # to a Docker registry.
 #
-# The standard name for this image is openshift/origin-custom-docker-builder
+# exemple of BuildConfig :
+#
+# apiVersion: v1
+# kind: BuildConfig
+# metadata:
+# ...
+# spec:
+#   triggers:
+#     - type: ConfigChange
+#   runPolicy: Serial
+#   source:
+#     type: None
+#   strategy:
+#     type: Custom
+#     customStrategy:
+#       from:
+#         kind: ImageStreamTag
+#         namespace: custombuild
+#         name: 'ose-cdb-to-external-registry:latest'
+#       env:
+#         - name: IS_NAME
+#           value: cnp
+#         - name: OUTPUT_IMAGE
+#           value: 'cncparis-node/seb-node:production'
+#       exposeDockerSocket: true
+#       secrets:
+#         - secretSource:
+#             name: docker-extreg-cfg
+#           mountPath: /root/.push-secret
+#   output:
+#     to:
+#       kind: ImageStreamTag
+#       name: 'ose-cdb-to-external-registry:custom'
+#   resources: {}
+#   postCommit: {}
+#   nodeSelector: null
+# 
+#
 #
 FROM openshift/origin-base
 
@@ -29,8 +71,8 @@ RUN INSTALL_PKGS="gettext automake make docker" && \
     rpm -V $INSTALL_PKGS && \
     yum clean all
 
-LABEL io.k8s.display-name="OpenShift Origin Custom Builder Example" \
-      io.k8s.description="This is an example of a custom builder for use with OpenShift Origin."
+LABEL io.k8s.display-name="OpenShift Custom Builder to external repository" \
+      io.k8s.description="This a custom builder for use with OpenShift in order to tag a specific taged image before pushing it to an extrenal repository."
       
 ENV HOME=/root \
     OC_VERSION="v1.4.1" \
