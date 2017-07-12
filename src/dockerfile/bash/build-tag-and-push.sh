@@ -55,11 +55,24 @@ else
       echo "no tag \"${INPUT_IS_TAG}\" in imageStream ${IS_NAME} in this project";
       exit 1
     fi
-     oc tag ${IS_NAME}:${INPUT_IS_TAG} ${IS_NAME}:${OUTPUT_IS_TAG}
-     # this is a groickky hack
-     sleep 5;
-     IS_VALUE=`oc get is ${IS_NAME} -o json`
-     IN_TAG=`echo ${IS_VALUE} | jq -r ".status.tags[]|select(.tag == \"${OUTPUT_IS_TAG}\")|.items|max_by(.created)|.dockerImageReference"`
+
+      IMAGE_SHA=`oc tag ${IS_NAME}:${INPUT_IS_TAG} ${IS_NAME}:${OUTPUT_IS_TAG}`
+    
+      R=1;
+      while [ $R -le 10 ]; do
+        let R=$R+1;
+        IS_VALUE=`oc get is ${IS_NAME} -o json -n custom-pusher`
+        IN_TAG=`echo ${IS_VALUE} | jq -r ".status.tags[]|select(.tag == \"${OUTPUT_IS_TAG}\")|.items|max_by(.created)|.dockerImageReference"`
+        
+        if [[ $IN_TAG == *$IMAGE_SHA* ]]; then
+          break;
+        else
+          echo "IMAGE_SHA=$IMAGE_SHA"
+          echo "IN_TAG=$IN_TAG"
+          
+          sleep 5
+        fi
+      done
   else
       echo "INPUT_IMAGE or IS_NAME need to be set"
       exit 1
