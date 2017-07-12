@@ -5,12 +5,12 @@
 #   OUTPUT_IMAGE - the name to tag the image with
 #   IS_NAME - the name of the imageStream to use
 #   INPUT_REGISTRY - a URI to fetch the build context from (internal registry)
-#    exemple : 
+#    example : 
 #     - name: INPUT_REGISTRY
 #       value: '172.30.135.130:5000'
 #  
-#   INPUT_IMAGE - This is a overinding mechanisme to push a specific image without tags (optional)
-#    exemple :  
+#   INPUT_IMAGE - This is an overriding mechanism to push a specific image without tags (optional)
+#    example :  
 #     - name: INPUT_IMAGE
 #       value: >-
 #        custombuild/cnp@sha256:09e2f87b64b431ed07722c0238848295c24d2806018c09e87ad418c0eb83395d
@@ -19,10 +19,10 @@
 #
 #   OUTPUT_IS_TAG - the tag used for the image before to pushing it
 #
-#   PUSH_SECRET need to be set to /root/.push-secret
+#   PUSH_SECRET needs to be set to /root/.push-secret
 #
 # This image expects to have the Docker socket bind-mounted into the container.
-# Push secret need to be mount to "/root/.push-secret" it will use that as authorization
+# Push secret need to be mounted to "/root/.push-secret" it will use that as authorization
 # to a Docker registry.
 #
 # exemple of BuildConfig :
@@ -63,6 +63,17 @@
 #   nodeSelector: null
 # 
 #
+############## 
+# After in order to import your image from your external repository to your project 
+# oc secrets new-dockercfg <secretSourceName> \
+#     --docker-server=<OUTPUT_REGISTRY> \
+#     --docker-username=<user> \
+#     --docker-password=<password> \
+#     --docker-email=<email>
+# 
+# oc tag OUTPUT_REGISTRY/IS_NAME:IS_TAG <current-is>:<current-tag> --scheduled
+#
+# NB : OUTPUT_REGISTRY (is the external registry dns)
 #
 FROM openshift/origin-base
 
