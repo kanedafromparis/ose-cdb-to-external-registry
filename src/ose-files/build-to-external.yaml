@@ -106,6 +106,10 @@ objects:
     strategy:
       type: Custom      
       customStrategy:
+        secrets:
+          - secretSource: 
+              name: "$PUSH_SECRET_NAME"
+            mountPath: "/root/.push-secret"
         env:
         - name: SOURCE_REPOSITORY
           value: ${SOURCE_REPOSITORY}
