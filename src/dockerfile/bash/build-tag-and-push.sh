@@ -56,7 +56,7 @@ else
       exit 1
     fi
 
-      IMAGE_SHA=`oc tag ${IS_NAME}:${INPUT_IS_TAG} ${IS_NAME}:${OUTPUT_IS_TAG}`
+      IMAGE_SHA=`oc tag ${IS_NAME}:${INPUT_IS_TAG} ${IS_NAME}:${OUTPUT_IS_TAG} | awk '{print $5}'`
     
       R=1;
       while [ $R -le 10 ]; do
