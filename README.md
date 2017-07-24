@@ -71,6 +71,16 @@ eval $(docker-machine env ose14-cb)
 
 docker run --rm -it --entrypoint /bin/bash ose-cdb-to-external-registry
 
+##### default docker build
+
+docker build -t ose-cdb-to-external-registry -f ./src/dockerfile/Dockerfile ./src/dockerfile/;
+
+##### enforced yum update docker build
+
+docker build --build-arg YUM_UPDATE=1 -t ose-cdb-to-external-registry -f ./src/dockerfile/Dockerfile ./src/dockerfile/;
+
+_ --no-cache could be used ;-) _
+
 #### Cleaning
 
 RM_LST=`docker ps -a | grep Exited | awk '{print $1}'` && docker rm $RM_LST

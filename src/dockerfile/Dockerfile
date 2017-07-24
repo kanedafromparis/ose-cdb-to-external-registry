@@ -77,6 +77,8 @@
 #
 FROM openshift/origin-base
 
+ARG  YUM_UPDATE=0
+
 RUN INSTALL_PKGS="gettext automake make docker" && \
     yum install -y $INSTALL_PKGS && \
     rpm -V $INSTALL_PKGS && \
@@ -91,6 +93,12 @@ ENV HOME=/root \
     OC_DIR="openshift-origin-client-tools-v1.4.1+3f9807a-linux-64bit" \
     OC_SHA256="c2ac117e85a968c4d16d5657a31dce0715dcbfa4ab4a7bc49e5c6fd7caffb7da"
 
+RUN if [ $YUM_UPDATE -eq 1 ]; then \
+      echo " yum update " && yum upgrade -y ; \
+      else \    
+      echo " no yum update "; \
+    fi;
+    
 RUN echo "install openshift client ..." && \
     curl -fsSL https://github.com/openshift/origin/releases/download/${OC_VERSION}/${OC_FILE} -o /tmp/oc.tar.gz && \
     echo "${OC_SHA256}  /tmp/oc.tar.gz" | sha256sum -c - && \
