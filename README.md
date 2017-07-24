@@ -30,6 +30,63 @@ cf . https://docs.openshift.com/container-platform/3.4/dev_guide/managing_images
 
 2 - create the custom builder
 
+2.a - without using ImageStream tag :
+
+    oc new-app -f src/ose-files/build-to-external-pusher.yaml \
+     -p IMAGESTREAM_NAME=<IMAGESTREAM_NAME> \
+     -p IMAGESTREAM_TAG=<IMAGESTREAM_TAG> \
+     -p OUTPUT_REGISTRY=<OUTPUT_REGISTRY> \
+     -p OUTPUT_IMAGE=<OUTPUT_IMAGE> \
+     -p INPUT_REGISTRY=<INPUT_REGISTRY> \
+     -p INPUT_IMAGE=<INPUT_IMAGE>
+
+     for instance
+
+    oc new-app -f src/ose-files/build-to-external-pusher.yaml \
+     -p IMAGESTREAM_NAME=ose-cdb-to-external-registry \
+     -p IMAGESTREAM_TAG='1.0' \
+     -p OUTPUT_REGISTRY=repo.example-01.com \
+     -p OUTPUT_IMAGE=project/tt0:prod \
+     -p INPUT_REGISTRY=172.30.135.155:5000 \
+     -p INPUT_IMAGE=current-ns/tt00@sha256:da13798eee695eca94d26f1c7b0b9cb97ff6b425a3b45278d5cca344c67675bc
+
+2.b - without using ImageStream tag :
+
+
+3 - in order to use this external image into another project 
+
+you can use the template :
+
+    oc new-app -f src/ose-files/is-import-from-external-repository.yaml \
+     -p DEV_PROJECT_NAME=<DEV_PROJECT_NAME> \
+     -p IMAGESTREAM_NAME=<IMAGESTREAM_NAME> \
+     -p IMAGESTREAM_TAG='IMAGESTREAM_TAG' \
+     -p OUTPUT_REGISTRY=<OUTPUT_REGISTRY> \
+     -p OUTPUT_IMAGE=<OUTPUT_IMAGE> 
+
+     example :
+     
+   oc new-app -f src/ose-files/is-import-from-external-repository.yaml \
+     -p DEV_PROJECT_NAME=My-producion-project \
+     -p IMAGESTREAM_NAME=my-new-is \
+     -p IMAGESTREAM_TAG='prod' \
+     -p OUTPUT_REGISTRY=repo.example-01.com \
+     -p OUTPUT_IMAGE=project/tt0:prod 
+
+
+- name: IMAGESTREAM_NAME
+  description: The ImageStream used for the BuildConfig
+- name: DEV_PROJECT_NAME
+  description: The name on the project using this ImageStream
+- name: IMAGESTREAM_TAG
+  description: The ImageStream tag used
+  value: prod
+- name: OUTPUT_REGISTRY
+  description: the Docker registry URL to retreive the image from
+  value: "172.30.135.130:5000"
+- name: OUTPUT_IMAGE
+  description: the name of the tagged the image
+  value: "custombuild/cnp-custom:custom"
 
 ## In progress Work
 

@@ -1,0 +1,51 @@
+# This is an example of import imagestream using template 
+# the variables are coherent with build-to-external-pusher.yaml file
+#
+# cf. https://docs.openshift.com/container-platform/3.4/dev_guide/managing_images.html#importing-tag-and-image-metadata
+#
+#
+# oc import-image <image_stream_name>[:<tag>] --from=<docker_image_repo> --confirm
+#
+#
+# NB: the variables OUTPUT_REGISTRY and OUTPUT_IMAGE might seems semantically wrong, but they are use accordingly to their usage in the other template. We keep the same name, because they should have the same value
+
+kind: Template
+apiVersion: v1
+metadata:
+  name: is-import
+  annotations:
+    description: This is a template to create the ImageStream corresponding to the image once externalized 
+    tags: template
+    iconClass: docker
+labels:
+  template: build-to-external-registry
+parameters:
+- name: DEV_PROJECT_NAME
+  description: The name on the project using this ImageStream
+- name: IMAGESTREAM_NAME
+  description: The ImageStream used for the BuildConfig
+- name: IMAGESTREAM_TAG
+  description: The ImageStream tag used
+  value: prod
+- name: OUTPUT_REGISTRY
+  description: the Docker registry URL to retreive the image from
+  value: "172.30.135.130:5000"
+- name: OUTPUT_IMAGE
+  description: the name of the tagged the image
+  value: "custombuild/cnp-custom:custom"
+
+- kind: ImageStream
+  apiVersion: v1
+  metadata:
+    name: ${IMAGESTREAM_NAME}
+  spec:
+    dockerImageRepository: "${OUTPUT_REGISTRY}/${DEV_PROJECT_NAME}/${IMAGESTREAM_NAME}:${IMAGESTREAM_TAG}"
+    tags:
+    - annotations: null
+      from:
+        kind: DockerImage
+        name: ${OUTPUT_REGISTRY}/${OUTPUT_IMAGE}
+      generation: 2
+      importPolicy: 
+        scheduled: true
+      name: production
