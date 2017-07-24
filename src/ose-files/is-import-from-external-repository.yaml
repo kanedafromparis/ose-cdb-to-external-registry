@@ -34,6 +34,9 @@ parameters:
   description: the name of the tagged the image
   value: "custombuild/cnp-custom:custom"
 
+
+objects:
+  
 - kind: ImageStream
   apiVersion: v1
   metadata:
