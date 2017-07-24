@@ -78,8 +78,8 @@ objects:
     nodeSelector: null
     output:
       to:
-        kind: DockerImage
-        name: fake-project/fake-image:tag
+      kind: ImageStreamTag
+      name: '${IMAGESTREAM_NAME}:custom'
     postCommit: {}
     resources: {}
     runPolicy: Serial
@@ -108,6 +108,7 @@ objects:
         - name: DEBUG_LEVEL
           value: "0"
         exposeDockerSocket: true
+        forcePull: true
         from:
           kind: ImageStreamTag            
           name: ${IMAGESTREAM_NAME}:${IMAGESTREAM_TAG}
