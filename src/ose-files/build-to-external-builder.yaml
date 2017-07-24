@@ -1,0 +1,61 @@
+# This OpenShift template will :
+#  - create BuildConfig from docker images for external-regsitry
+#  - create Imagestream corresponding the external-registry image
+# And create the build configs, either with the web console, or the cli :
+# $ oc new-app -f src/ose-files/build-to-external-builder.yaml 
+
+
+
+kind: Template
+apiVersion: v1
+metadata:
+  name: build-to-external-registry
+  annotations:
+    description: This is a template to create the build to external BuildConfig object
+    tags: template
+    iconClass: docker
+labels:
+  template: build-to-external-registry
+parameters:
+- name: GIT_SRC
+  description: https://github.com/kanedafromparis/ose-cdb-to-external-registry.git
+  value: "master"
+- name: GIT_REF
+  description: The git branch used for the builder
+  value: "master"
+
+
+objects:
+- kind: ImageStream
+  apiVersion: v1
+  metadata:
+    name: ose-cdb-to-external-registry
+
+- kind: BuildConfig
+  apiVersion: v1
+  metadata:
+    name: ose-cdb-to-external-registry
+    labels:
+      type: internal
+  spec:
+    strategy:
+      type: Docker
+      dockerStrategy:
+        noCache: true
+        env:
+          -
+            name: YUM_UPDATE
+            value: "1"
+      forcePull: true
+    source:
+      type: Git
+      contextDir: "src/dockerfile" 
+      git:
+        uri: ${GIT_SRC}
+        ref: ${GIT_REF}
+    output:
+      to:
+        kind: ImageStreamTag
+        name: ose-cdb-to-external-registry:latest
+    triggers:
+    - type: ConfigChange

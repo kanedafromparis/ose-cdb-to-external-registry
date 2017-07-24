@@ -4,7 +4,7 @@
 #   OUTPUT_REGISTRY - the Docker registry URL to push this image to
 #   OUTPUT_IMAGE - the name to tag the image with
 #   IS_NAME - the name of the imageStream to use
-#   INPUT_REGISTRY - a URI to fetch the build context from (internal registry)
+#   INPUT_REGISTRY - the Docker registry URL to fetch image from (internal registry)
 #    example : 
 #     - name: INPUT_REGISTRY
 #       value: '172.30.135.130:5000'

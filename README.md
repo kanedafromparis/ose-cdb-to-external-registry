@@ -6,7 +6,30 @@ This code is inspiread from :
  - https://blog.openshift.com/getting-any-docker-image-running-in-your-own-openshift-cluster/
  - https://coderleaf.wordpress.com/2017/02/10/run-docker-as-user-on-centos7/
 
-The purpose of this code is to allows from an openshift server to push a docker images for internal registry to an external registry
+The purpose of this code is to allows from an openshift server to push a docker images for internal registry to an external registry. It will use custombuild strategy to push existing image from internal registry to an external registry.
+
+# How to use it
+
+## in order to build the docker image used for the custom build named "external-pusher"
+
+oc new-app -f src/ose-files/build-to-external-builder.yaml 
+
+It will create the buildconfig for the image ans the imagestream.
+
+## in order to the custom build
+
+1 - import the "external-pusher" image into your project 
+
+    oc tag <source_project>/<image_stream>:<tag> <new_image_stream>:<new_tag>
+
+    for instance 
+    
+    oc tag custom-pusher/build-to-external-registry:latest build-to-external-registry:1.0
+    
+cf . https://docs.openshift.com/container-platform/3.4/dev_guide/managing_images.html#importing-tag-and-image-metadata
+
+2 - create the custom builder
+
 
 ## In progress Work
 

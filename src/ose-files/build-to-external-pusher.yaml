@@ -1,0 +1,119 @@
+# This OpenShift template will :
+#  - create BuildConfig from docker images for external-regsitry
+#  - create Imagestream corresponding the external-registry image
+#  - create BuildConfig corresponding the external-registry image build
+# And then create a "dockercfg" secret :
+# oc secrets new-dockercfg docker-extreg-cfg \
+#    --docker-server=$OUTPUT_REGISTRY \
+#    --docker-username=$USERNAME \
+#    --docker-password=$PASSWORD \
+#    --docker-email=$EMAIL
+# and associate it with the builder service account :
+# $ oc secrets add sa/builder secret/docker-extreg-cfg
+# Then, upload the template :
+oc new-app -f src/ose-files/build-to-external.yaml \
+ -p IMAGESTREAM_NAME=ose-cdb-to-external-registry \
+ -p IMAGESTREAM_TAG='0.9' \
+ -p OUTPUT_REGISTRY=axags-openpass-contento.jfrog.io \
+ -p OUTPUT_IMAGE=test/tt0:prod \
+ -p INPUT_REGISTRY=172.30.135.130:5000 \
+ -p INPUT_IMAGE=/to-trash/tt00@sha256:96518b38b3718b2ca49fe88aa5a0029726c88da6480e94ee31b57db9b6901735
+
+
+
+kind: Template
+apiVersion: v1
+metadata:
+  name: cutombuild-to-push-external-registry
+  annotations:
+    description: This is a template to create the build to external BuildConfig object
+    tags: template
+    iconClass: docker
+labels:
+  template: build-to-external-registry
+parameters:
+- name: BUILDCONFIG_NAME
+  description: The name of the BuildConfig
+  value: custom-build-to-ext-push
+- name: IMAGESTREAM_NAME
+  description: The ImageStream used for the BuildConfig
+  value: ose-cdb-to-external-registry
+- name: IMAGESTREAM_TAG
+  description: The ImageStream tag used for the BuildConfig
+  value: latest
+- name: OUTPUT_REGISTRY
+  description: the Docker registry URL to push this image to
+  value: "172.30.135.130:5000"
+- name: OUTPUT_IMAGE
+  description: the name to tag the image with
+  value: "custombuild/cnp-custom:custom"
+- name: IS_NAME
+  description: the name of the imageStream to use
+- name: INPUT_REGISTRY
+  description: the Docker registry URL to fetch image from (internal registry)
+  value: "172.30.135.130:5000"
+- name: INPUT_IMAGE
+  description: This is an overriding mechanism to push a specific image without tags (cf. read me)
+- name: INPUT_IS_TAG
+  description: the reference tag used for the image to push
+  value: 'uat'
+- name: OUTPUT_IS_TAG
+  description: the tag used for the image before to pushing it
+  value:   'production'
+- name: PUSH_SECRET_NAME
+  description: The secret used to pull the image from internal registry
+  value: docker-extreg-cfg
+
+
+objects:
+
+- kind: BuildConfig
+  apiVersion: v1
+  kind: BuildConfig
+  metadata:
+    labels:
+      app: ${BUILDCONFIG_NAME}
+    name: ${BUILDCONFIG_NAME}
+  spec:
+    nodeSelector: null
+    output:
+      to:
+        kind: DockerImage
+        name: fake-project/fake-image:tag
+    postCommit: {}
+    resources: {}
+    runPolicy: Serial
+    source:
+      type: None
+    strategy:
+      type: Custom      
+      customStrategy:
+        secrets:
+          - secretSource: 
+              name: "${PUSH_SECRET_NAME}"
+            mountPath: "/root/.push-secret"
+        env:
+        - name: OUTPUT_REGISTRY
+          value: ${OUTPUT_REGISTRY}
+        - name: OUTPUT_IMAGE
+          value: ${OUTPUT_IMAGE}
+        - name: IS_NAME
+          value: ${IS_NAME}
+        - name: INPUT_REGISTRY
+          value: ${INPUT_REGISTRY}
+        - name: INPUT_IS_TAG
+          value: ${INPUT_IS_TAG}
+        - name: OUTPUT_IS_TAG
+          value: ${OUTPUT_IS_TAG}
+        - name: DEBUG_LEVEL
+          value: "0"
+        exposeDockerSocket: true
+        from:
+          kind: ImageStreamTag            
+          name: ${IMAGESTREAM_NAME}:${IMAGESTREAM_TAG}
+#        secrets:
+#        - mountPath: /root/secret-pull
+#          secretSource:
+#            name: builder-dockercfg-5hsp2
+    triggers:
+    - type: ConfigChange
