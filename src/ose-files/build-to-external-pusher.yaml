@@ -11,15 +11,6 @@
 # and associate it with the builder service account :
 # $ oc secrets add sa/builder secret/docker-extreg-cfg
 # Then, upload the template :
-oc new-app -f src/ose-files/build-to-external.yaml \
- -p IMAGESTREAM_NAME=ose-cdb-to-external-registry \
- -p IMAGESTREAM_TAG='0.9' \
- -p OUTPUT_REGISTRY=axags-openpass-contento.jfrog.io \
- -p OUTPUT_IMAGE=test/tt0:prod \
- -p INPUT_REGISTRY=172.30.135.130:5000 \
- -p INPUT_IMAGE=/to-trash/tt00@sha256:96518b38b3718b2ca49fe88aa5a0029726c88da6480e94ee31b57db9b6901735
-
-
 
 kind: Template
 apiVersion: v1
