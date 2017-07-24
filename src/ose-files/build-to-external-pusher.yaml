@@ -90,6 +90,8 @@ objects:
           value: ${OUTPUT_IMAGE}
         - name: IS_NAME
           value: ${IS_NAME}
+        - name: INPUT_IMAGE
+          value: ${INPUT_IMAGE}          
         - name: INPUT_REGISTRY
           value: ${INPUT_REGISTRY}
         - name: INPUT_IS_TAG
