@@ -54,7 +54,9 @@ parameters:
 - name: PUSH_SECRET_NAME
   description: The secret used to pull the image from internal registry
   value: docker-extreg-cfg
-
+- name: SERVICEACCOUNT_NAME
+  description: The secret used to pull the image from internal registry
+  value: builder
 
 objects:
 
@@ -66,6 +68,7 @@ objects:
       app: ${BUILDCONFIG_NAME}
     name: ${BUILDCONFIG_NAME}
   spec:
+    serviceAccount: ${SERVICEACCOUNT_NAME}
     nodeSelector: null
     output:
       to:
