@@ -50,14 +50,37 @@ cf . https://docs.openshift.com/container-platform/3.4/dev_guide/managing_images
      -p INPUT_REGISTRY=172.30.135.155:5000 \
      -p INPUT_IMAGE=current-ns/tt00@sha256:da13798eee695eca94d26f1c7b0b9cb97ff6b425a3b45278d5cca344c67675bc
 
-2.b - without using ImageStream tag :
+2.b - using ImageStream tag :
 
+Beware that in order to allow your cutom build to access and update ImageStream, you need to use a serviceaccount with editing right on you ImageStream. You also need tag to exist on your IS to be tag with INPUT_IS_TAG (default is uat)
+
+    oc new-app -f src/ose-files/build-to-external-pusher-with-is-tag.yaml \
+     -p NAMESPACE=<NAMESPACE> \
+     -p PULL_SECRET_NAME=<PULL_SECRET_NAME> \
+     -p IMAGESTREAM_NAME=<IMAGESTREAM_NAME> \
+     -p IMAGESTREAM_TAG=<IMAGESTREAM_TAG> \
+     -p OUTPUT_REGISTRY=<OUTPUT_REGISTRY> \
+     -p OUTPUT_IMAGE=<OUTPUT_IMAGE> \
+     -p INPUT_REGISTRY=<INPUT_REGISTRY> \
+     -p IS_NAME=<IS_NAME>
+
+     for instance
+
+    oc new-app -f src/ose-files/build-to-external-pusher-with-is-tag.yaml \
+     -p NAMESPACE=custom-push-project \
+     -p PULL_SECRET_NAME=docker-pullsecrete-cfg \
+     -p IMAGESTREAM_NAME=ose-cdb-to-external-registry \
+     -p IMAGESTREAM_TAG=latest \
+     -p OUTPUT_REGISTRY=repo.example-01.com \
+     -p OUTPUT_IMAGE=test/php-project:prod \
+     -p INPUT_REGISTRY=172.30.1.1:5000 \
+     -p IS_NAME=php-cake     
 
 3 - in order to use this external image into another project 
 
 you can use the template :
 
-    oc new-app -f src/ose-files/is-import-from-external-repository.yaml \
+    oc new-app -f src/ose-files/build-to-external-pusher-with-is-tag.yaml \
      -p DEV_PROJECT_NAME=<DEV_PROJECT_NAME> \
      -p IMAGESTREAM_NAME=<IMAGESTREAM_NAME> \
      -p IMAGESTREAM_TAG='IMAGESTREAM_TAG' \
@@ -66,7 +89,7 @@ you can use the template :
 
      example :
      
-   oc new-app -f src/ose-files/is-import-from-external-repository.yaml \
+   oc new-app -f src/ose-files/build-to-external-pusher-with-is-tag.yaml \
      -p DEV_PROJECT_NAME=My-producion-project \
      -p IMAGESTREAM_NAME=my-new-is \
      -p IMAGESTREAM_TAG='prod' \
@@ -160,6 +183,8 @@ docker build -t ose-cdb-to-external-registry -f ./src/dockerfile/Dockerfile ./sr
 docker build --build-arg YUM_UPDATE=1 -t ose-cdb-to-external-registry -f ./src/dockerfile/Dockerfile ./src/dockerfile/;
 
 _ --no-cache could be used ;-) _
+
+oc create -f ./src/ose-files/jobs-util.yaml
 
 #### Cleaning
 
