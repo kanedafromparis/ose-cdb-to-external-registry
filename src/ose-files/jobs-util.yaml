@@ -1,0 +1,37 @@
+#
+#
+#
+#
+apiVersion: extensions/v1beta1
+kind: Job
+metadata:
+  name: role-utils
+spec:
+  selector:         
+    matchLabels:
+      app: role-utils
+  parallelism: 1    
+  completions: 1    
+  template:         
+    metadata:
+      name: role-utils
+      labels:
+        app: role-utils
+    spec:
+      serviceAccount: custom-pusher
+      volumes: {}
+      containers:
+      - name: role-utils
+        image: 172.30.135.1:1/to-trash/ose-cdb-to-external-registry:1.0
+        command: ["tail", "-f", "/dev/null"]
+        resources:
+          limits:
+            memory: 1Gi
+            cpu: 1000m
+          requests:
+            memory: 100Mi
+            cpu: 250m
+        volumeMounts: {}
+        env:
+
+      restartPolicy: Never
