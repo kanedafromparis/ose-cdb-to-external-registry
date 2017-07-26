@@ -7,7 +7,7 @@
 #   INPUT_REGISTRY - the Docker registry URL to fetch image from (internal registry)
 #    example : 
 #     - name: INPUT_REGISTRY
-#       value: '172.30.135.130:5000'
+#       value: '172.30.1.1:5000'
 #  
 #   INPUT_IMAGE - This is an overriding mechanism to push a specific image without tags (optional)
 #    example :  
