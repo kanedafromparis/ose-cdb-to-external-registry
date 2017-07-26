@@ -34,7 +34,7 @@ parameters:
   value: latest
 - name: OUTPUT_REGISTRY
   description: the Docker registry URL to push this image to
-  value: "172.30.135.130:5000"
+  value: "172.30.1.1:5000"
 - name: OUTPUT_IMAGE
   description: the name to tag the image with
   value: "custombuild/cnp-custom:custom"
@@ -42,7 +42,7 @@ parameters:
   description: the name of the imageStream to use
 - name: INPUT_REGISTRY
   description: the Docker registry URL to fetch image from (internal registry)
-  value: "172.30.135.130:5000"
+  value: "172.30.1.1:5000"
 - name: INPUT_IMAGE
   description: This is an overriding mechanism to push a specific image without tags (cf. read me)
 - name: INPUT_IS_TAG
@@ -52,11 +52,11 @@ parameters:
   description: the tag used for the image before to pushing it
   value:   'production'
 - name: PUSH_SECRET_NAME
-  description: The secret used to pull the image from internal registry
+  description: The secret used to push the image from internal registry
   value: docker-extreg-cfg
-- name: SERVICEACCOUNT_NAME
+- name: PULL_SECRET_NAME
   description: The secret used to pull the image from internal registry
-  value: builder
+  value: docker-pull-cfg
 
 objects:
 
@@ -68,12 +68,11 @@ objects:
       app: ${BUILDCONFIG_NAME}
     name: ${BUILDCONFIG_NAME}
   spec:
-    serviceAccount: ${SERVICEACCOUNT_NAME}
     nodeSelector: null
     output:
       to:
-      kind: ImageStreamTag
-      name: '${IMAGESTREAM_NAME}:custom'
+        kind: ImageStreamTag
+        name: '${IMAGESTREAM_NAME}:custom'
     postCommit: {}
     resources: {}
     runPolicy: Serial
@@ -108,6 +107,8 @@ objects:
         from:
           kind: ImageStreamTag            
           name: ${IMAGESTREAM_NAME}:${IMAGESTREAM_TAG}
+        pullSecret:
+          name: ${PULL_SECRET_NAME}
 #        secrets:
 #        - mountPath: /root/secret-pull
 #          secretSource:
