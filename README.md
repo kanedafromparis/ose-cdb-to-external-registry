@@ -55,7 +55,7 @@ cf . https://docs.openshift.com/container-platform/3.4/dev_guide/managing_images
 Beware that in order to allow your cutom build to access and update ImageStream, you need to use a serviceaccount with editing right on you ImageStream. You also need tag to exist on your IS to be tag with INPUT_IS_TAG (default is uat)
 
     oc new-app -f src/ose-files/build-to-external-pusher-with-is-tag.yaml \
-     -p NAMESPACE=<NAMESPACE> \
+     -p NAMESPACE=$(oc project | cut -d'"' -f2) \
      -p PULL_SECRET_NAME=<PULL_SECRET_NAME> \
      -p IMAGESTREAM_NAME=<IMAGESTREAM_NAME> \
      -p IMAGESTREAM_TAG=<IMAGESTREAM_TAG> \
@@ -81,7 +81,7 @@ Beware that in order to allow your cutom build to access and update ImageStream,
 you can use the template :
 
     oc new-app -f src/ose-files/build-to-external-pusher-with-is-tag.yaml \
-     -p DEV_PROJECT_NAME=<DEV_PROJECT_NAME> \
+     -p DEV_PROJECT_NAME=$(oc project | cut -d'"' -f2) \
      -p IMAGESTREAM_NAME=<IMAGESTREAM_NAME> \
      -p IMAGESTREAM_TAG='IMAGESTREAM_TAG' \
      -p OUTPUT_REGISTRY=<OUTPUT_REGISTRY> \
